@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Copy, Check, Search, Download, BookOpen, ExternalLink, Hash, List, Code2, Eye, Split } from 'lucide-react';
-import { RAW_README_MARKDOWN } from '../data/researchData';
+import { RAW_README_MARKDOWN as RAW_BUDWORM_MARKDOWN } from '../data/researchData';
+import { RAW_CALIFORNIA_README_MARKDOWN, PROJECTS_META } from '../data/californiaResearchData';
+import { ProjectId } from '../types';
 
 interface MarkdownViewerProps {
   mode: 'rendered' | 'raw';
+  projectId: ProjectId;
 }
 
-export default function MarkdownViewer({ mode: initialMode }: MarkdownViewerProps) {
+export default function MarkdownViewer({ mode: initialMode, projectId }: MarkdownViewerProps) {
   const [copied, setCopied] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [viewLayout, setViewLayout] = useState<'split' | 'rendered' | 'raw'>(
@@ -16,9 +19,12 @@ export default function MarkdownViewer({ mode: initialMode }: MarkdownViewerProp
   );
   const [activeSectionId, setActiveSectionId] = useState<string>('summary');
 
+  const activeProject = PROJECTS_META[projectId];
+  const markdownContent = projectId === 'california-migration' ? RAW_CALIFORNIA_README_MARKDOWN : RAW_BUDWORM_MARKDOWN;
+
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(RAW_README_MARKDOWN);
+      await navigator.clipboard.writeText(markdownContent);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (e) {
@@ -27,16 +33,16 @@ export default function MarkdownViewer({ mode: initialMode }: MarkdownViewerProp
   };
 
   const handleDownload = () => {
-    const blob = new Blob([RAW_README_MARKDOWN], { type: 'text/markdown' });
+    const blob = new Blob([markdownContent], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'README.md';
+    a.download = `${activeProject.repoName}-README.md`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
-  const sections = [
+  const sectionsBudworm = [
     { title: 'Title & Badges', icon: '#', color: 'text-blue-400', tag: 'Header', id: 'spruce-budworm-warbler-dispersal' },
     { title: 'Executive Summary', icon: '[]', color: 'text-green-400', tag: 'Core', id: '-executive-summary--research-question' },
     { title: 'Ecological Background', icon: '$', color: 'text-orange-400', tag: 'Ecology', id: '-ecological--atmospheric-background' },
@@ -53,7 +59,27 @@ export default function MarkdownViewer({ mode: initialMode }: MarkdownViewerProp
     { title: 'Acknowledgements', icon: '★', color: 'text-rose-400', tag: 'Authors', id: '-acknowledgements' },
   ];
 
-  const lines = RAW_README_MARKDOWN.split('\n');
+  const sectionsCalifornia = [
+    { title: 'Title & Badges', icon: '#', color: 'text-blue-400', tag: 'Header', id: 'where-did-californians-move' },
+    { title: 'Executive Summary', icon: '[]', color: 'text-green-400', tag: 'Core', id: '-executive-summary' },
+    { title: 'Research Question', icon: '?', color: 'text-emerald-400', tag: 'Question', id: '-research-question' },
+    { title: 'Background & Westward Pull', icon: '$', color: 'text-orange-400', tag: 'History', id: '-background--historical-context' },
+    { title: 'Data Sources & Projection', icon: '💾', color: 'text-cyan-400', tag: 'NHGIS', id: '-data-sources--geospatial-architecture' },
+    { title: 'Methodology & Pipeline', icon: '⚙', color: 'text-purple-400', tag: 'ArcGIS', id: '-methodology--analytical-pipeline' },
+    { title: 'Inflation Normalization', icon: '💲', color: 'text-yellow-400', tag: 'CPI-U', id: '2-inflation-normalization-field-calculator' },
+    { title: 'Spatial Statistics: Mean Center', icon: '📍', color: 'text-blue-400', tag: 'Stats', id: '3-spatial-statistics-mean-center--trajectory-analysis' },
+    { title: 'Sensitivity Tests (No LA/Bay)', icon: '🔬', color: 'text-indigo-400', tag: 'Sensitivity', id: '4-sensitivity-testing-excluding-la--bay-area' },
+    { title: 'Repository Structure', icon: '📁', color: 'text-yellow-400', tag: 'Code', id: '-repository-structure' },
+    { title: 'Key Results & 6 Maps', icon: '📊', color: 'text-emerald-400', tag: 'Results', id: '-key-results--maps' },
+    { title: 'Economic Discussion', icon: '💬', color: 'text-red-400', tag: 'Discussion', id: '-ecological--economic-discussion' },
+    { title: 'Installation & Python Code', icon: '>_', color: 'text-purple-400', tag: 'Code', id: '-installation--reproducibility' },
+    { title: 'References & BibTeX', icon: '©', color: 'text-yellow-400', tag: 'Citations', id: '-references--data-citations' },
+    { title: 'Acknowledgements', icon: '★', color: 'text-rose-400', tag: 'Authors', id: '-acknowledgements' },
+  ];
+
+  const sections = projectId === 'california-migration' ? sectionsCalifornia : sectionsBudworm;
+
+  const lines = markdownContent.split('\n');
   const filteredLines = searchTerm
     ? lines.map((l, idx) => ({ text: l, idx })).filter(item => item.text.toLowerCase().includes(searchTerm.toLowerCase()))
     : lines.map((l, idx) => ({ text: l, idx }));
@@ -65,7 +91,7 @@ export default function MarkdownViewer({ mode: initialMode }: MarkdownViewerProp
       <aside className="w-full lg:w-[260px] border-r border-[#30363d] bg-[#0d1117] flex flex-col shrink-0">
         <div className="p-3 border-b border-[#30363d] flex items-center justify-between">
           <span className="text-[11px] font-bold text-[#8b949e] uppercase tracking-wider">
-            README Sections
+            README Structure
           </span>
           <span className="text-[10px] font-mono bg-[#21262d] text-[#8b949e] px-1.5 py-0.5 rounded border border-[#30363d]">
             {sections.length} Units
@@ -106,7 +132,7 @@ export default function MarkdownViewer({ mode: initialMode }: MarkdownViewerProp
           </div>
           <div className="mt-2 text-[10px] text-[#8b949e] flex justify-between font-mono">
             <span>Lines: {lines.length}</span>
-            <span>Size: ~14.2 KB</span>
+            <span>Course: {projectId === 'california-migration' ? 'GEG 230' : 'Maine/NSF'}</span>
           </div>
         </div>
       </aside>
@@ -117,14 +143,16 @@ export default function MarkdownViewer({ mode: initialMode }: MarkdownViewerProp
         {/* Workspace Toolbar */}
         <div className="px-4 py-2 bg-[#161b22] border-b border-[#30363d] flex flex-wrap items-center justify-between gap-3 text-xs shrink-0">
           <div className="flex items-center gap-3">
-            <span className="font-mono text-[#8b949e] text-xs font-semibold">README.md</span>
+            <span className="font-mono text-[#8b949e] text-xs font-semibold">
+              {activeProject.repoName}/README.md
+            </span>
             <div className="hidden sm:flex gap-3 text-[11px] text-[#8b949e] font-mono">
               <span className="flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#238636]" />
                 UTF-8
               </span>
               <span>Markdown (GFM)</span>
-              <span>14 Sections</span>
+              <span>{sections.length} Sections</span>
             </div>
           </div>
 
@@ -189,7 +217,6 @@ export default function MarkdownViewer({ mode: initialMode }: MarkdownViewerProp
           {(viewLayout === 'split' || viewLayout === 'raw') && (
             <div className={`flex-1 font-mono text-[12px] sm:text-[13px] leading-relaxed bg-[#0d1117] border-r border-[#30363d] overflow-y-auto p-3 scrollbar-thin select-text`}>
               {filteredLines.map(({ text, idx }) => {
-                // High density syntax coloring for markdown
                 const isH1 = text.startsWith('# ');
                 const isH2 = text.startsWith('## ');
                 const isH3 = text.startsWith('### ');
@@ -301,7 +328,7 @@ export default function MarkdownViewer({ mode: initialMode }: MarkdownViewerProp
                     ),
                   }}
                 >
-                  {RAW_README_MARKDOWN}
+                  {markdownContent}
                 </ReactMarkdown>
               </div>
 

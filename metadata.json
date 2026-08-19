@@ -1,6 +1,6 @@
 {
-  "name": "Spruce Budworm Dispersal & Warbler Habitat README",
-  "description": "Comprehensive GitHub documentation and research companion for modeling Spruce Budworm atmospheric dispersal and Bay-breasted Warbler spatial predator-prey dynamics.",
+  "name": "Christopher Franqui GIS Research Portfolio & README Generator",
+  "description": "Comprehensive GitHub documentation, ArcGIS Pro Mean Center spatial analysis, and interactive GIS companions for Christopher Franqui's research projects (California Population & Home Values 1970-2020 and Spruce Budworm Atmospheric Dispersal).",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

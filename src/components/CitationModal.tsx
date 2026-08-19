@@ -1,17 +1,33 @@
 import { useState } from 'react';
 import { X, Copy, Check, Quote } from 'lucide-react';
+import { ProjectId } from '../types';
 
 interface CitationModalProps {
   isOpen: boolean;
   onClose: () => void;
+  projectId: ProjectId;
 }
 
-export default function CitationModal({ isOpen, onClose }: CitationModalProps) {
+export default function CitationModal({ isOpen, onClose, projectId }: CitationModalProps) {
   const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
-  const citations = {
+  const citationsCalifornia = {
+    bibtex: `@misc{franqui2026californiamigration,
+  author       = {Christopher Franqui},
+  title        = {Where did Californians move? Tracking shifting population center and home values from 1970-2020},
+  howpublished = {GEG 230: Spatial Analysis and GIS Research Presentation, Monroe Community College},
+  year         = {2026},
+  month        = {Spring},
+  note         = {Supervised by Professor Pierce, Monroe Community College}
+}`,
+    apa: `Franqui, C. (2026). Where did Californians move? Tracking shifting population center and home values from 1970-2020. GEG 230: Spatial Analysis and GIS Research Presentation, Monroe Community College.`,
+    mla: `Franqui, Christopher. "Where did Californians move? Tracking shifting population center and home values from 1970-2020." GEG 230: Spatial Analysis and GIS, Monroe Community College, Spring 2026.`,
+    chicago: `Franqui, Christopher. 2026. "Where did Californians move? Tracking shifting population center and home values from 1970-2020." Research Presentation, GEG 230 Spatial Analysis and GIS, Monroe Community College.`,
+  };
+
+  const citationsBudworm = {
     bibtex: `@misc{franqui2026sprucebudworm,
   author       = {Christopher Franqui},
   title        = {Modeling Spruce Budworm Dispersal from Quebec into Maine along with its Spatial Relationship to Bay-breasted Warbler Breeding Habitat},
@@ -24,6 +40,8 @@ export default function CitationModal({ isOpen, onClose }: CitationModalProps) {
     mla: `Franqui, Christopher. "Modeling Spruce Budworm Dispersal from Quebec into Maine along with its Spatial Relationship to Bay-breasted Warbler Breeding Habitat." Maine Internship Research Program, Monroe Community College and University of Maine, Spring 2026.`,
     chicago: `Franqui, Christopher. 2026. "Modeling Spruce Budworm Dispersal from Quebec into Maine along with its Spatial Relationship to Bay-breasted Warbler Breeding Habitat." Research Presentation, Maine Internship Program, Monroe Community College.`,
   };
+
+  const citations = projectId === 'california-migration' ? citationsCalifornia : citationsBudworm;
 
   const handleCopy = async (text: string, format: string) => {
     try {
@@ -49,9 +67,14 @@ export default function CitationModal({ isOpen, onClose }: CitationModalProps) {
           <Quote className="w-4 h-4 text-[#e3b341]" />
           <span>Research Citation</span>
         </div>
-        <h3 className="text-base font-bold text-white mb-3">
+        <h3 className="text-base font-bold text-white mb-1">
           Academic Citation Formats
         </h3>
+        <p className="text-[#8b949e] text-[11px] mb-3">
+          {projectId === 'california-migration'
+            ? 'Where did Californians move? Tracking shifting population center and home values (1970–2020)'
+            : 'Modeling Spruce Budworm Dispersal from Quebec into Maine & Bay-breasted Warbler Breeding Habitat'}
+        </p>
 
         <div className="space-y-3 max-h-[65vh] overflow-y-auto pr-1 scrollbar-thin">
           {/* BibTeX */}
