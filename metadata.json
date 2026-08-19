@@ -1,0 +1,6 @@
+{
+  "name": "Spruce Budworm Dispersal & Warbler Habitat README",
+  "description": "Comprehensive GitHub documentation and research companion for modeling Spruce Budworm atmospheric dispersal and Bay-breasted Warbler spatial predator-prey dynamics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
